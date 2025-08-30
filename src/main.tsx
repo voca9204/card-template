@@ -4,6 +4,7 @@ import App from './App'
 import './index.css'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
+import { registerServiceWorker } from './registerServiceWorker'
 
 const theme = createTheme({
   palette: {
@@ -28,3 +29,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ThemeProvider>
   </React.StrictMode>,
 )
+
+// Register service worker for PWA functionality
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    registerServiceWorker()
+  })
+}
