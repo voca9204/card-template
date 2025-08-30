@@ -40,6 +40,7 @@ import { ImageGenerator } from '../utils/imageGenerator'
 import { getTemplates, SavedTemplate, deleteTemplate } from '../services/templateService'
 import BankSettings from './BankSettings'
 import { ocrService } from '../services/ocrService'
+import { defaultBanks, normalizeBankName, addBankIfNotExists } from '../data/bankList'
 
 interface BankInfo {
   accountHolder: string
@@ -48,24 +49,6 @@ interface BankInfo {
   accountNumber: string
   amount: string
 }
-
-const defaultBanks = [
-  '中国工商银行',
-  '中国建设银行',
-  '中国银行',
-  '中国农业银行',
-  '交通银行',
-  '招商银行',
-  '中信银行',
-  '民生银行',
-  '兴业银行',
-  '浦发银行',
-  '平安银行',
-  '华夏银行',
-  '广发银行',
-  '邮政储蓄银行',
-  '其他'
-]
 
 const QuickDownload: React.FC = () => {
   const navigate = useNavigate()
@@ -267,11 +250,30 @@ const QuickDownload: React.FC = () => {
       // Extract bank info using OCR
       const extractedInfo = await ocrService.extractBankInfoFromImage(base64Image)
       
+      // Handle bank name - normalize and add to list if not exists
+      let finalBankName = extractedInfo.bankName || ''
+      if (finalBankName) {
+        // Try to normalize the bank name
+        const normalized = normalizeBankName(finalBankName)
+        
+        // Check if it's in the current list
+        if (!bankList.includes(normalized)) {
+          // Add the new bank to the list
+          const updatedList = addBankIfNotExists(normalized, bankList)
+          setBankList(updatedList)
+          // Save to localStorage
+          localStorage.setItem('customBanks', JSON.stringify(updatedList))
+          console.log('Added new bank to list:', normalized)
+        }
+        
+        finalBankName = normalized
+      }
+      
       // Update form with extracted information
       setBankInfo(prevInfo => ({
         ...prevInfo,
         accountHolder: extractedInfo.accountHolder || prevInfo.accountHolder,
-        bankName: extractedInfo.bankName || prevInfo.bankName,
+        bankName: finalBankName || prevInfo.bankName,
         branch: extractedInfo.branch || prevInfo.branch,
         accountNumber: extractedInfo.accountNumber || prevInfo.accountNumber,
         amount: extractedInfo.amount || prevInfo.amount

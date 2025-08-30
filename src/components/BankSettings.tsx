@@ -25,6 +25,7 @@ import {
   ArrowDownward as ArrowDownIcon,
   RestartAlt as ResetIcon
 } from '@mui/icons-material'
+import { defaultBanks, addBankIfNotExists } from '../data/bankList'
 
 interface BankSettingsProps {
   open: boolean
@@ -45,23 +46,6 @@ const BankSettings: React.FC<BankSettingsProps> = ({
 
   // Reset to default banks
   const handleReset = () => {
-    const defaultBanks = [
-      '中国工商银行',
-      '中国建设银行',
-      '中国银行',
-      '中国农业银行',
-      '交通银行',
-      '招商银行',
-      '中信银行',
-      '民生银行',
-      '兴业银行',
-      '浦发银行',
-      '平安银行',
-      '华夏银行',
-      '广发银行',
-      '邮政储蓄银行',
-      '其他'
-    ]
     setLocalBanks(defaultBanks)
   }
 
