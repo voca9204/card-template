@@ -41,6 +41,7 @@ import { getTemplates, SavedTemplate, deleteTemplate } from '../services/templat
 import BankSettings from './BankSettings'
 import { ocrService } from '../services/ocrService'
 import { defaultBanks, normalizeBankName, addBankIfNotExists } from '../data/bankList'
+import { getGlobalBanks, addBankToGlobalList, saveGlobalBanks, subscribeToBanks, migrateLocalStorageToFirebase } from '../services/bankService'
 
 interface BankInfo {
   accountHolder: string
@@ -63,10 +64,7 @@ const QuickDownload: React.FC = () => {
   })
   const [imageDataUrl, setImageDataUrl] = useState<string>('')
   const [error, setError] = useState<string>('')
-  const [bankList, setBankList] = useState<string[]>(() => {
-    const saved = localStorage.getItem('customBanks')
-    return saved ? JSON.parse(saved) : defaultBanks
-  })
+  const [bankList, setBankList] = useState<string[]>(defaultBanks)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [templateToDelete, setTemplateToDelete] = useState<SavedTemplate | null>(null)
@@ -74,9 +72,32 @@ const QuickDownload: React.FC = () => {
   const [isProcessingOCR, setIsProcessingOCR] = useState(false)
   const [ocrError, setOcrError] = useState<string>('')
 
-  // Load cloud templates on mount
+  // Load cloud templates and banks on mount
   useEffect(() => {
     loadCloudTemplates()
+    
+    // Load banks from Firebase
+    const loadBanks = async () => {
+      try {
+        // Migrate localStorage data if exists
+        await migrateLocalStorageToFirebase()
+        
+        // Load banks from Firebase
+        const banks = await getGlobalBanks()
+        setBankList(banks)
+      } catch (error) {
+        console.error('Failed to load banks:', error)
+      }
+    }
+    
+    loadBanks()
+    
+    // Subscribe to bank changes
+    const unsubscribe = subscribeToBanks((banks) => {
+      setBankList(banks)
+    })
+    
+    return () => unsubscribe()
   }, [])
 
   const loadCloudTemplates = async () => {
@@ -258,12 +279,10 @@ const QuickDownload: React.FC = () => {
         
         // Check if it's in the current list
         if (!bankList.includes(normalized)) {
-          // Add the new bank to the list
-          const updatedList = addBankIfNotExists(normalized, bankList)
+          // Add the new bank to Firebase
+          const updatedList = await addBankToGlobalList(normalized)
           setBankList(updatedList)
-          // Save to localStorage
-          localStorage.setItem('customBanks', JSON.stringify(updatedList))
-          console.log('Added new bank to list:', normalized)
+          console.log('Added new bank to Firebase:', normalized)
         }
         
         finalBankName = normalized

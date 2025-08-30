@@ -22,6 +22,7 @@ import BankSettings from './BankSettings'
 import RichTextModal from './RichTextModal'
 import NoticeTemplates, { NoticeTemplate } from './NoticeTemplates'
 import { defaultBanks } from '../data/bankList'
+import { getGlobalBanks, saveGlobalBanks, subscribeToBanks, migrateLocalStorageToFirebase } from '../services/bankService'
 
 interface BankInfoFormProps {
   bankInfo: BankInfo
@@ -32,13 +33,35 @@ const BankInfoForm: React.FC<BankInfoFormProps> = ({
   bankInfo,
   onBankInfoChange
 }) => {
-  const [banks, setBanks] = React.useState<string[]>(() => {
-    const saved = localStorage.getItem('customBanks')
-    return saved ? JSON.parse(saved) : defaultBanks
-  })
+  const [banks, setBanks] = React.useState<string[]>(defaultBanks)
   const [settingsOpen, setSettingsOpen] = React.useState(false)
   const [editorModalOpen, setEditorModalOpen] = React.useState(false)
   const [templateDialogOpen, setTemplateDialogOpen] = React.useState(false)
+  
+  // Load banks from Firebase on mount
+  React.useEffect(() => {
+    const loadBanks = async () => {
+      try {
+        // Migrate localStorage data if exists
+        await migrateLocalStorageToFirebase()
+        
+        // Load banks from Firebase
+        const banks = await getGlobalBanks()
+        setBanks(banks)
+      } catch (error) {
+        console.error('Failed to load banks:', error)
+      }
+    }
+    
+    loadBanks()
+    
+    // Subscribe to bank changes
+    const unsubscribe = subscribeToBanks((banks) => {
+      setBanks(banks)
+    })
+    
+    return () => unsubscribe()
+  }, [])
 
   const handleChange = (field: keyof BankInfo) => (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent

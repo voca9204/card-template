@@ -26,6 +26,7 @@ import {
   RestartAlt as ResetIcon
 } from '@mui/icons-material'
 import { defaultBanks, addBankIfNotExists } from '../data/bankList'
+import { saveGlobalBanks } from '../services/bankService'
 
 interface BankSettingsProps {
   open: boolean
@@ -90,10 +91,16 @@ const BankSettings: React.FC<BankSettingsProps> = ({
   }
 
   // Save changes
-  const handleSave = () => {
-    onBanksChange(localBanks)
-    localStorage.setItem('customBanks', JSON.stringify(localBanks))
-    onClose()
+  const handleSave = async () => {
+    try {
+      // Save to Firebase
+      await saveGlobalBanks(localBanks)
+      onBanksChange(localBanks)
+      onClose()
+    } catch (error) {
+      console.error('Failed to save banks:', error)
+      setError('保存失败，请重试')
+    }
   }
 
   // Cancel changes
