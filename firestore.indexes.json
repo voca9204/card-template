@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "generated_templates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "bankInfo.accountHolder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

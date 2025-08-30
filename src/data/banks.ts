@@ -1,0 +1,20 @@
+export const banks = [
+  { id: 'icbc', name: '中国工商银行' },
+  { id: 'ccb', name: '中国建设银行' },
+  { id: 'boc', name: '中国银行' },
+  { id: 'abc', name: '中国农业银行' },
+  { id: 'comm', name: '交通银行' },
+  { id: 'cmb', name: '招商银行' },
+  { id: 'citic', name: '中信银行' },
+  { id: 'cmbc', name: '民生银行' },
+  { id: 'cib', name: '兴业银行' },
+  { id: 'spdb', name: '浦发银行' },
+  { id: 'pab', name: '平安银行' },
+  { id: 'hxb', name: '华夏银行' },
+  { id: 'gdb', name: '广发银行' },
+  { id: 'psbc', name: '邮政储蓄银行' },
+  { id: 'bea', name: '东亚银行' },
+  { id: 'bob', name: '北京银行' },
+  { id: 'bos', name: '上海银行' },
+  { id: 'other', name: '其他' }
+]
