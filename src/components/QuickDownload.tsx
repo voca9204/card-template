@@ -32,7 +32,8 @@ import {
   Settings,
   Delete,
   CloudUpload,
-  Scanner
+  Scanner,
+  PhoneIphone
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { ImageGenerator } from '../utils/imageGenerator'
@@ -306,6 +307,14 @@ const QuickDownload: React.FC = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             快速下载
           </Typography>
+          <Button
+            color="inherit"
+            startIcon={<PhoneIphone />}
+            onClick={() => navigate('/pwa-guide')}
+            sx={{ mr: 1 }}
+          >
+            安装教程
+          </Button>
           <Button
             color="inherit"
             onClick={() => navigate('/')}

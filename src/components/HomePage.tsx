@@ -7,7 +7,7 @@ import {
   Box,
   Button
 } from '@mui/material'
-import { Rocket, Edit } from '@mui/icons-material'
+import { Rocket, Edit, PhoneIphone } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import BankInfoForm from './BankInfoForm'
 import TemplateSelector from './TemplateSelector'
@@ -215,7 +215,23 @@ const HomePage: React.FC = () => {
             <Typography variant="h5" component="h1">
               转账通知生成器
             </Typography>
-            <Box>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<PhoneIphone />}
+                onClick={() => navigate('/pwa-guide')}
+                sx={{ 
+                  borderColor: 'white',
+                  color: 'white',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    borderColor: 'white'
+                  }
+                }}
+              >
+                安装教程
+              </Button>
               <Button
                 variant="outlined"
                 color="inherit"
